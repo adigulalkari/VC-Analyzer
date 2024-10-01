@@ -26,7 +26,8 @@ cd VC-Analyzer
 ```
 Run main
 ```
-go run main.go
+chmod +x build.sh
+./build.sh
 ```
 
 ## Contributing

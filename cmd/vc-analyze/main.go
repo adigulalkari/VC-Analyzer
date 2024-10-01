@@ -17,6 +17,10 @@ var rootCmd = &cobra.Command{
 func init() {
     subcommands.GetCmd.Flags().StringVarP(&subcommands.Repository, "repository", "r", "", "The GitHub repository in the format 'owner/repo'")
     rootCmd.AddCommand(subcommands.GetCmd)
+
+
+    // Add the 'calc-stats' command
+    rootCmd.AddCommand(subcommands.CalcStatsCmd)
 }
 
 func main() {

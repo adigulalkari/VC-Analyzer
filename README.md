@@ -1,5 +1,8 @@
 # Version Control Activity Analyzer
-![Logo](assets/logo.png)
+
+<p align="center">
+    <img src="assets/logo.png" alt="Logo" />
+</p>
 
 A command-line tool for analyzing version control activity in Git repositories. This tool provides insights into commit history, identifies bottlenecks, and detects anti-patterns in a project's version control workflow.
 

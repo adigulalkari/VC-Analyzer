@@ -38,4 +38,8 @@ Contributions are welcome! Please follow these steps to contribute to the projec
 - Push to the branch: ```git push origin feature-branch```
 - Open a pull request.
 
+Refer to [CONTRIBUTING.md](https://github.com/adigulalkari/VC-Analyzer/blob/main/CONTRIBUTING.md) for more guidelines!
+
+## LICENSE
+See the [LICENSE](https://github.com/adigulalkari/VC-Analyzer/blob/main/LICENSE) file for license rights and limitations (MIT).
 

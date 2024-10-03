@@ -38,6 +38,3 @@ var CalcStatsCmd = &cobra.Command{
         return nil
     },
 }
-
-// NOTE: THE FUNCTION SHOULD CALCULATE STATS AND NOT JUS SHOW THE DIFFERENT COMMITS
-// REQUIRES FIX

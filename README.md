@@ -1,9 +1,9 @@
 # Version Control Activity Analyzer
 
 [![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/adigulalkari/VC-Analyzer)
-[![GitHub license](https://img.shields.io/github/license/IEEE-VIT/termiboard.svg)](https://github.com/adigulalkari/VC-Analyzer/blob/main/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/adigulalkari/VC-Analyzer.svg)](https://github.com/adigulalkari/VC-Analyzer/blob/main/LICENSE)
 [![GitHub go.mod Go version of a Go module](https://img.shields.io/github/go-mod/go-version/IEEE-VIT/termiboard.svg)](https://github.com/adigulalkari/VC-Analyzer)
-[![GitHub Open Issues](https://img.shields.io/github/issues-raw/IEEE-VIT/termiboard)](https://github.com/adigulalkari/VC-Analyzer/issues)
+[![GitHub Open Issues](https://img.shields.io/github/issues-raw/adigulalkari/VC-Analyzer)](https://github.com/adigulalkari/VC-Analyzer/issues)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/adigulalkari/VC-Analyzer/issues/new/choose)
 
 

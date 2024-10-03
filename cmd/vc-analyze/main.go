@@ -20,6 +20,7 @@ func init() {
     rootCmd.AddCommand(subcommands.GetCmd)
     rootCmd.AddCommand(subcommands.CalcStatsCmd)
     rootCmd.AddCommand(subcommands.AntiPatternsCmd)
+    rootCmd.AddCommand(subcommands.DetectBottlenecksCmd)
 }
 
 func main() {

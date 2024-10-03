@@ -30,6 +30,11 @@ chmod +x build.sh
 ./build.sh
 ```
 
+## Usage
+```
+vc-analyze --help
+```
+
 ## Contributing
 Contributions are welcome! Please follow these steps to contribute to the project:
 

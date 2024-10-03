@@ -11,12 +11,12 @@ import (
     "github.com/adigulalkari/VC-Analyzer/pkg/analyzer" 
 )
 
-var CalcStatsCmd = &cobra.Command{ 
-    Use:     "calc-stats <detail>",
-    Short:   "Calculate the number of commits for the local repo",
+var AntiPatternsCmd = &cobra.Command{ 
+    Use:     "check-anti-patterns <detail>",
+    Short:   "Find out the anti-patterns present in your repository",
     Example: heredoc.Doc(`
-        Calculate the number of commits for the local repo
-        $ vc-analyze calc-stats path/to/local/repo
+        Find out the anti-patterns present in your repository
+        $ vc-analyze check-anti-patterns path/to/local/repo
     `),
     Args: func(cmd *cobra.Command, args []string) error {
         if len(args) < 1 {
@@ -33,7 +33,7 @@ var CalcStatsCmd = &cobra.Command{
         }
 
         // Call the AnalyzeCommitHistory function
-        analyzer.AnalyzeCommitHistory(repoPath)
+        analyzer.DetectAntiPatterns(repoPath)
 
         return nil
     },

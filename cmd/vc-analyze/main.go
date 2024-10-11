@@ -27,7 +27,6 @@ func init() {
     rootCmd.AddCommand(subcommands.DetectBottlenecksCmd)
     
 }
-
 func main() {
     myFigure := figure.NewFigure("VC-Analyze", "", true)
     myFigure.Print()

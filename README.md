@@ -53,6 +53,29 @@ Contributions are welcome! Please follow these steps to contribute to the projec
 
 Refer to [CONTRIBUTING.md](https://github.com/adigulalkari/VC-Analyzer/blob/main/CONTRIBUTING.md) for more guidelines!
 
+## Documentation
+```vc-analyze --help```
+<br>
+
+<img width="743" alt="image" src="https://github.com/user-attachments/assets/eb970877-1b07-43b8-915d-0f9ab55d0755">
+<br>
+<hr>
+
+```vc-analyze calc-stats path/to/local/repo```
+
+Provides the following stats:
+- All commit history msgs 
+- Stats on the contributions per author
+- Active/Inactive branches
+<br>
+
+```vc-analyze check-anti-patterns path/to/local/repo```
+
+Provides the following functionalities
+- Checking large commits
+- Checking for force pushes
+- Flag large binary files in commits that bloat the repository
+
 ## LICENSE
 See the [LICENSE](https://github.com/adigulalkari/VC-Analyzer/blob/main/LICENSE) file for license rights and limitations (MIT).
 

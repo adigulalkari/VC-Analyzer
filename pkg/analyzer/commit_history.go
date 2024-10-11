@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"sort"
-	"strings"
 
 	"github.com/go-git/go-git/v5"                 // Core Go-git library
 	"github.com/go-git/go-git/v5/plumbing/object"  // Used for commit objects
@@ -35,12 +34,7 @@ func AnalyzeCommitHistory(repoPath string) {
 
 	fmt.Println("Commit history analysis:")
 	err = commitIter.ForEach(func(c *object.Commit) error {
-		// Trim the commit message to remove leading/trailing whitespace
-		trimmedMessage := strings.TrimSpace(c.Message)
-
-		// Print each commit's message and author
-		fmt.Printf("Author: %s Commit Message:%s\n", c.Author.Name,trimmedMessage)
-
+		
 		// Increment commit count for the author
 		commitCounts[c.Author.Name]++
 		commitCount++

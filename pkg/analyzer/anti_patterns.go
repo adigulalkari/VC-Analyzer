@@ -48,6 +48,7 @@ func DetectAntiPatterns(repoPath string) {
         if c.NumParents() > 1 {
             forcePushesDetected = true
         }
+    // FIXME: The logic here needs to be improved 
 
         return nil
     })

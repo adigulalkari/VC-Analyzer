@@ -5,7 +5,12 @@ import (
 	"log"
 	"sort"
 
-	"github.com/go-git/go-git/v5"                 // Core Go-git library
+	"strings"
+	"time"
+
+	"github.com/fatih/color"
+	"github.com/go-git/go-git/v5" // Core Go-git library
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object" // Used for commit objects
 )
 
@@ -34,6 +39,7 @@ func AnalyzeCommitHistory(repoPath string) {
 
 	fmt.Println("Commit history analysis:")
 	err = commitIter.ForEach(func(c *object.Commit) error {
+
 		// Increment commit count for the author
 		commitCounts[c.Author.Name]++
 		commitCount++
@@ -69,6 +75,46 @@ func AnalyzeCommitHistory(repoPath string) {
 	for _, ac := range authorCommits {
 		fmt.Printf("%s: %d commits\n", ac.Author, ac.Count)
 	}
+
+	// List all branches and their activity status
+	fmt.Println("\nBranches:")
+	branches, err := repo.Branches()
+	if err != nil {
+		log.Fatalf("Error getting branches: %v", err)
+	}
+
+	activeBranchCount := 0
+	inactiveBranchCount := 0
+
+	branches.ForEach(func(ref *plumbing.Reference) error {
+		commit, err := repo.CommitObject(ref.Hash())
+		if err != nil {
+			log.Fatalf("Error getting commit object: %v", err)
+		}
+
+		// Determine if the branch is active based on last commit date
+		isActive := time.Since(commit.Committer.When) < 90*24*time.Hour
+
+		branchName := ref.Name().Short()
+		branchStatus := "Inactive"
+		statusColor := color.New(color.FgRed)
+
+		if isActive {
+			branchStatus = "Active"
+			statusColor = color.New(color.FgGreen)
+			activeBranchCount++
+		} else {
+			inactiveBranchCount++
+		}
+
+		fmt.Printf("%s: ", branchName)
+		statusColor.Printf("%s\n", branchStatus)
+
+		return nil
+	})
+
+	fmt.Printf("\nActive branches: %d\n", activeBranchCount)
+	fmt.Printf("Inactive branches: %d\n", inactiveBranchCount)
 }
 
 func AnalyzeCommitSize(repoPath string) {

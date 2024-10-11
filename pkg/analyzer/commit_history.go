@@ -5,9 +5,12 @@ import (
 	"log"
 	"sort"
 	"strings"
+	"time"
 
-	"github.com/go-git/go-git/v5"                 // Core Go-git library
-	"github.com/go-git/go-git/v5/plumbing/object"  // Used for commit objects
+	"github.com/fatih/color"
+	"github.com/go-git/go-git/v5" // Core Go-git library
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object" // Used for commit objects
 )
 
 // AnalyzeCommitHistory analyzes and prints commit history of the given repository
@@ -39,7 +42,7 @@ func AnalyzeCommitHistory(repoPath string) {
 		trimmedMessage := strings.TrimSpace(c.Message)
 
 		// Print each commit's message and author
-		fmt.Printf("Author: %s Commit Message:%s\n", c.Author.Name,trimmedMessage)
+		fmt.Printf("Author: %s Commit Message:%s\n", c.Author.Name, trimmedMessage)
 
 		// Increment commit count for the author
 		commitCounts[c.Author.Name]++
@@ -76,4 +79,44 @@ func AnalyzeCommitHistory(repoPath string) {
 	for _, ac := range authorCommits {
 		fmt.Printf("%s: %d commits\n", ac.Author, ac.Count)
 	}
+
+	// List all branches and their activity status
+	fmt.Println("\nBranches:")
+	branches, err := repo.Branches()
+	if err != nil {
+		log.Fatalf("Error getting branches: %v", err)
+	}
+
+	activeBranchCount := 0
+	inactiveBranchCount := 0
+
+	branches.ForEach(func(ref *plumbing.Reference) error {
+		commit, err := repo.CommitObject(ref.Hash())
+		if err != nil {
+			log.Fatalf("Error getting commit object: %v", err)
+		}
+
+		// Determine if the branch is active based on last commit date
+		isActive := time.Since(commit.Committer.When) < 90*24*time.Hour
+
+		branchName := ref.Name().Short()
+		branchStatus := "Inactive"
+		statusColor := color.New(color.FgRed)
+
+		if isActive {
+			branchStatus = "Active"
+			statusColor = color.New(color.FgGreen)
+			activeBranchCount++
+		} else {
+			inactiveBranchCount++
+		}
+
+		fmt.Printf("%s: ", branchName)
+		statusColor.Printf("%s\n", branchStatus)
+
+		return nil
+	})
+
+	fmt.Printf("\nActive branches: %d\n", activeBranchCount)
+	fmt.Printf("Inactive branches: %d\n", inactiveBranchCount)
 }

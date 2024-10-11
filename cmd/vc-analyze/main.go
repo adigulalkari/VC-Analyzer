@@ -6,6 +6,7 @@ import (
 
     "github.com/spf13/cobra"
     "github.com/adigulalkari/VC-Analyzer/cmd/subcommands"
+    "github.com/common-nighthawk/go-figure"
 )
 
 var rootCmd = &cobra.Command{
@@ -27,9 +28,9 @@ func init() {
     rootCmd.AddCommand(subcommands.DetectBottlenecksCmd)
     
 }
-
 func main() {
-    fmt.Println("<<-----VC-Analyzer----->>")
+    myFigure := figure.NewFigure("VC-Analyze", "", true)
+    myFigure.Print()
 
     err := rootCmd.Execute()
     if err != nil {

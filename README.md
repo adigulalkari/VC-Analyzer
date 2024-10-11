@@ -57,7 +57,7 @@ Refer to [CONTRIBUTING.md](https://github.com/adigulalkari/VC-Analyzer/blob/main
 ```vc-analyze --help```
 <br>
 
-<img width="743" alt="image" src="https://github.com/user-attachments/assets/eb970877-1b07-43b8-915d-0f9ab55d0755">
+<img width="739" alt="image" src="https://github.com/user-attachments/assets/4c74e334-c7aa-43b8-b44c-1474e9f8017c">
 <br>
 <hr>
 

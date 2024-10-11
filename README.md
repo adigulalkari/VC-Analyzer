@@ -55,9 +55,11 @@ Refer to [CONTRIBUTING.md](https://github.com/adigulalkari/VC-Analyzer/blob/main
 
 ## Documentation
 ```vc-analyze --help```
+<br>
 
 <img width="743" alt="image" src="https://github.com/user-attachments/assets/eb970877-1b07-43b8-915d-0f9ab55d0755">
 <br>
+<hr>
 
 ```vc-analyze calc-stats path/to/local/repo```
 

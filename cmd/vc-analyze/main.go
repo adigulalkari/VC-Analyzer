@@ -6,6 +6,7 @@ import (
     "github.com/spf13/cobra"
     "github.com/adigulalkari/VC-Analyzer/cmd/subcommands"
     "github.com/common-nighthawk/go-figure"
+    "github.com/fatih/color"
 )
 
 var rootCmd = &cobra.Command{
@@ -25,11 +26,13 @@ func init() {
     rootCmd.AddCommand(subcommands.CalcStatsCmd)
     rootCmd.AddCommand(subcommands.AntiPatternsCmd)
     rootCmd.AddCommand(subcommands.DetectBottlenecksCmd)
-    
 }
+
 func main() {
     myFigure := figure.NewFigure("VC-Analyze", "", true)
-    myFigure.Print()
+
+    blue := color.New(color.FgBlue)
+    blue.Println(myFigure.String())
 
     err := rootCmd.Execute()
     if err != nil {

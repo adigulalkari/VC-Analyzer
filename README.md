@@ -42,17 +42,6 @@ chmod +x build.sh
 vc-analyze --help
 ```
 
-## Contributing
-Contributions are welcome! Please follow these steps to contribute to the project:
-
-- Fork the repository.
-- Create a new branch: ```git checkout -b feature-branch```
-- Make your changes and commit them: ```git commit -m "Add new feature"```
-- Push to the branch: ```git push origin feature-branch```
-- Open a pull request.
-
-Refer to [CONTRIBUTING.md](https://github.com/adigulalkari/VC-Analyzer/blob/main/CONTRIBUTING.md) for more guidelines!
-
 ## Documentation
 ```vc-analyze --help```
 <br>
@@ -75,6 +64,17 @@ Provides the following functionalities
 - Checking large commits
 - Checking for force pushes
 - Flag large binary files in commits that bloat the repository
+
+## Contributing
+Contributions are welcome! Please follow these steps to contribute to the project:
+
+- Fork the repository.
+- Create a new branch: ```git checkout -b feature-branch```
+- Make your changes and commit them: ```git commit -m "Add new feature"```
+- Push to the branch: ```git push origin feature-branch```
+- Open a pull request.
+
+Refer to [CONTRIBUTING.md](https://github.com/adigulalkari/VC-Analyzer/blob/main/CONTRIBUTING.md) for more guidelines!
 
 ## LICENSE
 See the [LICENSE](https://github.com/adigulalkari/VC-Analyzer/blob/main/LICENSE) file for license rights and limitations (MIT).

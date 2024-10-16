@@ -30,6 +30,10 @@ func AnalyzeCommitHistory(repoPath string) {
 		log.Fatalf("Error opening repository: %v", err)
 	}
 
+	commitHistory(repo, false)
+}
+
+func commitHistory(repo *git.Repository, noColor bool) {
 	// Get all authors and their commit count
 	commitCounts, commitCount, err := getCommitCounts(repo)
 	if err != nil {
@@ -43,7 +47,7 @@ func AnalyzeCommitHistory(repoPath string) {
 	if err != nil {
 		log.Fatalf("Error getting branch history: %v", err)
 	}
-	printBranchHistory(branchesMap, activeBranchCount, inactiveBranchCount, false)
+	printBranchHistory(branchesMap, activeBranchCount, inactiveBranchCount, noColor)
 }
 
 func getSortedAuthorCommits(commitCounts map[string]int) []authorCommit {
@@ -171,16 +175,30 @@ func AnalyzeCommitSize(repoPath string) {
 		log.Fatalf("Error opening repository: %v", err)
 	}
 
-	//Get the HEAD reference
-	ref, err := repo.Head()
+	commitSize(repo)
+}
+
+func commitSize(repo *git.Repository) {
+	commitCount, totalSize, err := getCommitStats(repo)
 	if err != nil {
-		log.Fatalf("Error getting HEAD reference: %v", err)
+		log.Fatalf("Error getting commit stats: %v", err)
 	}
 
-	//Iterate over the commit history starting from HEAD
+	// Print commit size statistics
+	printCommitSize(commitCount, totalSize)
+}
+
+func getCommitStats(repo *git.Repository) (int, int, error) {
+	// Get the HEAD reference
+	ref, err := repo.Head()
+	if err != nil {
+		return 0, 0, fmt.Errorf("Error getting HEAD reference: %w", err)
+	}
+
+	// Iterate over the commit history starting from HEAD
 	commitIter, err := repo.Log(&git.LogOptions{From: ref.Hash()})
 	if err != nil {
-		log.Fatalf("Error getting commit log: %v", err)
+		return 0, 0, fmt.Errorf("Error getting commit log: %w", err)
 	}
 
 	totalSize := 0
@@ -193,10 +211,12 @@ func AnalyzeCommitSize(repoPath string) {
 	})
 
 	if err != nil {
-		log.Fatalf("Error iterating over commits: %v", err)
+		return 0, 0, fmt.Errorf("Error iterating over commits: %w", err)
 	}
+	return commitCount, totalSize, nil
+}
 
-	// Print commit size statistics
+func printCommitSize(commitCount int, totalSize int) {
 	fmt.Printf("\nTotal number of commits: %d\n", commitCount)
 	fmt.Printf("Total commit message size: %d bytes\n", totalSize)
 	fmt.Printf("Average commit size: %.2f bytes\n", float64(totalSize)/float64(commitCount))

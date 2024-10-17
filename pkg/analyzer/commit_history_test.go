@@ -52,6 +52,37 @@ func Example_printBranchHistory() {
 	// Inactive branches: 0
 }
 
+func Example_commitHistory() {
+	// Create a new in-memory repository
+	fs := memfs.New()
+	repo, err := git.Init(memory.NewStorage(), fs)
+	if err != nil {
+		fmt.Printf("Failed to initialize in-memory repository: %v\n", err)
+		return
+	}
+	_, err = createCommit(repo, time.Now())
+	if err != nil {
+		fmt.Printf("Failed to create commit for tests: %v\n", err)
+		return
+	}
+
+	commitHistory(repo, true)
+
+	// Output:
+	// Commit history analysis:
+	//
+	// Total number of commits: 1
+	//
+	// Number of commits by each author (in decreasing order):
+	// Test Author: 1 commits
+	//
+	// Branches:
+	// master: Active
+	//
+	// Active branches: 1
+	// Inactive branches: 0
+}
+
 func TestListBranches(t *testing.T) {
 	// Create a new in-memory repository
 	fs := memfs.New()
@@ -64,7 +95,10 @@ func TestListBranches(t *testing.T) {
 		"foo":    "Inactive",
 	}
 	// Create a new commit in master branch
-	lastCommit := createCommit(t, repo, time.Now())
+	lastCommit, err := createCommit(repo, time.Now())
+	if err != nil {
+		t.Fatalf("Failed to create commit for tests: %v", err)
+	}
 
 	wt, err := repo.Worktree()
 	if err != nil {
@@ -82,16 +116,19 @@ func TestListBranches(t *testing.T) {
 	}
 
 	// Create a new commit in foo branch
-	createCommit(t, repo, time.Now().Add(-91*24*time.Hour))
+	_, err = createCommit(repo, time.Now().Add(-91*24*time.Hour))
+	if err != nil {
+		t.Fatalf("Failed to create commit for tests: %v", err)
+	}
 
 	branchesMap, activeBranchCount, inactiveBranchCount, err := getBranchCounts(repo)
 	if err != nil {
 		t.Fatalf("Failed to get branches for tests: %v", err)
 	}
-	fmt.Println(branchesMap, activeBranchCount, inactiveBranchCount, err)
+
 	// Check local branches
 	if len(branchesMap) != 2 {
-		t.Errorf("Expected 1 local branch , got %v", branchesMap)
+		t.Errorf("Expected 2 local branch , got %v", branchesMap)
 	}
 	if activeBranchCount != 1 {
 		t.Errorf("Expected 1 active branch , got %v", activeBranchCount)
@@ -104,15 +141,15 @@ func TestListBranches(t *testing.T) {
 	}
 }
 
-func createCommit(t *testing.T, repo *git.Repository, when time.Time) plumbing.Hash {
+func createCommit(repo *git.Repository, when time.Time) (plumbing.Hash, error) {
 	wt, err := repo.Worktree()
 	if err != nil {
-		t.Fatalf("Failed to get worktree: %v", err)
+		return plumbing.ZeroHash, fmt.Errorf("Failed to get worktree: %w", err)
 	}
 	util.WriteFile(wt.Filesystem, "foo", []byte("foo"), 0644)
 	_, err = wt.Add("foo")
 	if err != nil {
-		t.Fatalf("Failed to add file: %v", err)
+		return plumbing.ZeroHash, fmt.Errorf("Failed to add file: %w", err)
 	}
 
 	h, err := wt.Commit("Initial commit ", &git.CommitOptions{
@@ -123,9 +160,9 @@ func createCommit(t *testing.T, repo *git.Repository, when time.Time) plumbing.H
 		},
 	})
 	if err != nil {
-		t.Fatalf("Failed to create commit: %v", err)
+		return plumbing.ZeroHash, fmt.Errorf("Failed to create commit: %w", err)
 	}
-	return h
+	return h, nil
 }
 
 func TestCountCommits(t *testing.T) {
@@ -136,7 +173,10 @@ func TestCountCommits(t *testing.T) {
 		t.Fatalf("Failed to initialize in-memory repository: %v", err)
 	}
 
-	createCommit(t, repo, time.Now())
+	_, err = createCommit(repo, time.Now())
+	if err != nil {
+		t.Fatalf("Failed to create commit for tests: %v", err)
+	}
 
 	// Count commits
 	commitsPerAuthor, totalCommits, err := getCommitCounts(repo)
@@ -200,5 +240,68 @@ func TestGetSortedAuthorCommits(t *testing.T) {
 				t.Errorf("got %v, want %v", result, tt.expected)
 			}
 		})
+	}
+}
+
+func Example_printCommitSize() {
+	printCommitSize(5, 250)
+	// Output:
+	// Total number of commits: 5
+	// Total commit message size: 250 bytes
+	// Average commit size: 50.00 bytes
+}
+
+func Example_commitSize() {
+	// Create a new in-memory repository
+	fs := memfs.New()
+	repo, err := git.Init(memory.NewStorage(), fs)
+	if err != nil {
+		fmt.Printf("Failed to initialize in-memory repository: %v\n", err)
+		return
+	}
+
+	_, err = createCommit(repo, time.Now())
+	if err != nil {
+		fmt.Printf("Failed to create commit for tests: %v\n", err)
+		return
+	}
+	commitSize(repo)
+
+	// Output:
+	// Total number of commits: 1
+	// Total commit message size: 15 bytes
+	// Average commit size: 15.00 bytes
+}
+
+func TestCommitStats(t *testing.T) {
+	// Create a new in-memory repository
+	fs := memfs.New()
+	repo, err := git.Init(memory.NewStorage(), fs)
+	if err != nil {
+		t.Fatalf("Failed to initialize in-memory repository: %v", err)
+	}
+
+	_, err = createCommit(repo, time.Now())
+	if err != nil {
+		t.Fatalf("Failed to create commit for tests: %v", err)
+	}
+
+	_, err = createCommit(repo, time.Now())
+	if err != nil {
+		t.Fatalf("Failed to create commit for tests: %v", err)
+	}
+
+	commitCount, totalSize, err := getCommitStats(repo)
+	if err != nil {
+		t.Errorf("Expected nil Error, got: %v", err)
+	}
+	// Check total commits
+	if commitCount != 2 {
+		t.Errorf("Expected 2 commits, got %d", commitCount)
+	}
+
+	// Check total commits size
+	if totalSize != 30 {
+		t.Errorf("Expected size 30, got %d", totalSize)
 	}
 }

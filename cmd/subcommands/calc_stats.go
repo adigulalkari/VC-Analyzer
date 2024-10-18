@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	authorStats bool
-	commitSize  bool
+	authorStats  bool
+	commitSize   bool
+	activeBranch bool
 )
 
 var CalcStatsCmd = &cobra.Command{
@@ -26,6 +27,9 @@ var CalcStatsCmd = &cobra.Command{
 
         # Calculate commit size statistics
         $ vc-analyze calc-stats --commit-size path/to/local/repo
+
+        # Calculate branch statistics
+        $ vc-analyze calc-stats --active-branch path/to/local/repo
     `),
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -48,8 +52,11 @@ var CalcStatsCmd = &cobra.Command{
 		} else if commitSize {
 			// Call a function to calculate commit size statistics
 			analyzer.AnalyzeCommitSize(repoPath)
+		} else if activeBranch {
+			//Call function to show branch statistics
+			analyzer.AnalyzeBranchStats(repoPath)
 		} else {
-			return errors.New("no valid flag provided, use --author-stats or --commit-size")
+			return errors.New("no valid flag provided, use --author-stats , --commit-size or --active-branch")
 		}
 
 		return nil
@@ -57,6 +64,7 @@ var CalcStatsCmd = &cobra.Command{
 }
 
 func init() {
-    CalcStatsCmd.Flags().BoolVar(&authorStats, "author-stats", false, "Calculate statistics for each author")
-    CalcStatsCmd.Flags().BoolVar(&commitSize, "commit-size", false, "Calculate the size of commits")
+	CalcStatsCmd.Flags().BoolVar(&authorStats, "author-stats", false, "Calculate statistics for each author")
+	CalcStatsCmd.Flags().BoolVar(&commitSize, "commit-size", false, "Calculate the size of commits")
+	CalcStatsCmd.Flags().BoolVar(&activeBranch, "active-branch", false, "Show branch statistics")
 }

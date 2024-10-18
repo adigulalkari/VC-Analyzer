@@ -30,10 +30,10 @@ func AnalyzeCommitHistory(repoPath string) {
 		log.Fatalf("Error opening repository: %v", err)
 	}
 
-	commitHistory(repo, false)
+	commitHistory(repo)
 }
 
-func commitHistory(repo *git.Repository, noColor bool) {
+func commitHistory(repo *git.Repository) {
 	// Get all authors and their commit count
 	commitCounts, commitCount, err := getCommitCounts(repo)
 	if err != nil {
@@ -41,13 +41,6 @@ func commitHistory(repo *git.Repository, noColor bool) {
 	}
 	authorCommits := getSortedAuthorCommits(commitCounts)
 	printCommitHistoryAnalysis(commitCount, authorCommits)
-
-	// List all branches and their activity status
-	branchesMap, activeBranchCount, inactiveBranchCount, err := getBranchCounts(repo)
-	if err != nil {
-		log.Fatalf("Error getting branch history: %v", err)
-	}
-	printBranchHistory(branchesMap, activeBranchCount, inactiveBranchCount, noColor)
 }
 
 func getSortedAuthorCommits(commitCounts map[string]int) []authorCommit {
@@ -111,64 +104,6 @@ func printCommitHistoryAnalysis(commitCount int, authorCommits []authorCommit) {
 	}
 }
 
-func getBranchCounts(repo *git.Repository) (map[string]string, int, int, error) {
-	branches, err := repo.Branches()
-	if err != nil {
-		return nil, 0, 0, fmt.Errorf("Error getting branches: %w", err)
-	}
-
-	branchesMap := make(map[string]string)
-	activeBranchCount := 0
-	inactiveBranchCount := 0
-
-	err = branches.ForEach(func(ref *plumbing.Reference) error {
-		commit, err := repo.CommitObject(ref.Hash())
-		if err != nil {
-			return err
-		}
-
-		branchName := ref.Name().Short()
-
-		// Determine if the branch is active based on last commit date
-		isActive := time.Since(commit.Committer.When) < 90*24*time.Hour
-
-		branchStatus := InActive
-		if isActive {
-			branchStatus = Active
-			activeBranchCount++
-		} else {
-			inactiveBranchCount++
-		}
-
-		branchesMap[branchName] = branchStatus
-		return nil
-	})
-
-	if err != nil {
-		return nil, 0, 0, fmt.Errorf("Error getting commit object: %w", err)
-	}
-
-	return branchesMap, activeBranchCount, inactiveBranchCount, nil
-}
-
-func printBranchHistory(branchesMap map[string]string, activeBranchCount int, inactiveBranchCount int, noColor bool) {
-	fmt.Println("\nBranches:")
-	for branchName, branchStatus := range branchesMap {
-		fmt.Printf("%s: ", branchName)
-		statusColor := color.New(color.FgRed)
-		if branchStatus == Active {
-			statusColor = color.New(color.FgGreen)
-		}
-		if noColor {
-			fmt.Printf("%s\n", branchStatus)
-		} else {
-			statusColor.Printf("%s\n", branchStatus)
-		}
-	}
-	fmt.Printf("\nActive branches: %d\n", activeBranchCount)
-	fmt.Printf("Inactive branches: %d\n", inactiveBranchCount)
-}
-
 func AnalyzeCommitSize(repoPath string) {
 	repo, err := git.PlainOpen(repoPath)
 	if err != nil {
@@ -220,4 +155,82 @@ func printCommitSize(commitCount int, totalSize int) {
 	fmt.Printf("\nTotal number of commits: %d\n", commitCount)
 	fmt.Printf("Total commit message size: %d bytes\n", totalSize)
 	fmt.Printf("Average commit size: %.2f bytes\n", float64(totalSize)/float64(commitCount))
+}
+
+// AnalyzeBranchStats analyzes and prints branch stats of the given repository
+func AnalyzeBranchStats(repoPath string) {
+	repo, err := git.PlainOpen(repoPath)
+	if err != nil {
+		log.Fatalf("Error opening repository: %v", err)
+	}
+
+	branchStats(repo, false)
+}
+
+func branchStats(repo *git.Repository, noColor bool) {
+	// List all branches and their activity status
+	branchesMap, activeBranchCount, inactiveBranchCount, err := getBranchCounts(repo)
+	if err != nil {
+		log.Fatalf("Error getting branch history: %v", err)
+	}
+	printBranchHistory(branchesMap, activeBranchCount, inactiveBranchCount, noColor)
+}
+
+func getBranchCounts(repo *git.Repository) (map[string]string, int, int, error) {
+	branches, err := repo.Branches()
+	if err != nil {
+		return nil, 0, 0, fmt.Errorf("Error getting branches: %w", err)
+	}
+
+	branchesMap := make(map[string]string)
+	activeBranchCount := 0
+	inactiveBranchCount := 0
+
+	err = branches.ForEach(func(ref *plumbing.Reference) error {
+		commit, err := repo.CommitObject(ref.Hash())
+		if err != nil {
+			return err
+		}
+
+		branchName := ref.Name().Short()
+
+		// Determine if the branch is active based on last commit date
+		isActive := time.Since(commit.Committer.When) < 90*24*time.Hour
+
+		branchStatus := InActive
+		if isActive {
+			branchStatus = Active
+			activeBranchCount++
+		} else {
+			inactiveBranchCount++
+		}
+
+		branchesMap[branchName] = branchStatus
+		return nil
+	})
+
+	if err != nil {
+		return nil, 0, 0, fmt.Errorf("Error getting commit object: %w", err)
+	}
+
+	return branchesMap, activeBranchCount, inactiveBranchCount, nil
+}
+
+func printBranchHistory(branchesMap map[string]string, activeBranchCount int, inactiveBranchCount int, noColor bool) {
+	fmt.Println("Branch analysis:")
+	fmt.Println("\nBranches:")
+	for branchName, branchStatus := range branchesMap {
+		fmt.Printf("%s: ", branchName)
+		statusColor := color.New(color.FgRed)
+		if branchStatus == Active {
+			statusColor = color.New(color.FgGreen)
+		}
+		if noColor {
+			fmt.Printf("%s\n", branchStatus)
+		} else {
+			statusColor.Printf("%s\n", branchStatus)
+		}
+	}
+	fmt.Printf("\nActive branches: %d\n", activeBranchCount)
+	fmt.Printf("Inactive branches: %d\n", inactiveBranchCount)
 }

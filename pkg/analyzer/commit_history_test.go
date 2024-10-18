@@ -45,6 +45,8 @@ func Example_printBranchHistory() {
 
 	// Output:
 	//
+	// Branch analysis:
+	//
 	// Branches:
 	// main: Active
 	//
@@ -66,7 +68,7 @@ func Example_commitHistory() {
 		return
 	}
 
-	commitHistory(repo, true)
+	commitHistory(repo)
 
 	// Output:
 	// Commit history analysis:
@@ -75,12 +77,6 @@ func Example_commitHistory() {
 	//
 	// Number of commits by each author (in decreasing order):
 	// Test Author: 1 commits
-	//
-	// Branches:
-	// master: Active
-	//
-	// Active branches: 1
-	// Inactive branches: 0
 }
 
 func TestListBranches(t *testing.T) {
@@ -304,4 +300,30 @@ func TestCommitStats(t *testing.T) {
 	if totalSize != 30 {
 		t.Errorf("Expected size 30, got %d", totalSize)
 	}
+}
+
+func Example_branchStats() {
+	// Create a new in-memory repository
+	fs := memfs.New()
+	repo, err := git.Init(memory.NewStorage(), fs)
+	if err != nil {
+		fmt.Printf("Failed to initialize in-memory repository: %v\n", err)
+		return
+	}
+
+	_, err = createCommit(repo, time.Now())
+	if err != nil {
+		fmt.Printf("Failed to create commit for tests: %v\n", err)
+		return
+	}
+	branchStats(repo, true)
+
+	// Output:
+	// Branch analysis:
+	//
+	// Branches:
+	// master: Active
+	//
+	// Active branches: 1
+	// Inactive branches: 0
 }

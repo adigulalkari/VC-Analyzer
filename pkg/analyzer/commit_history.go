@@ -5,7 +5,6 @@ import (
 	"log"
 	"sort"
 
-	"strings"
 	"time"
 
 	"github.com/fatih/color"
